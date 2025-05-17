@@ -114,6 +114,7 @@ class HattrickLoginApp:
         for widget in self.root.winfo_children():
             widget.destroy()
         large_font = tkFont.Font(family="Arial", size=14, weight="bold")
+        self.root.title("Main menu")
 
         tk.Button(
             self.root,
@@ -135,18 +136,18 @@ class HattrickLoginApp:
 
     def do_results(self):
         """Az összes forduló kiértékelése egyszerre"""
-        if not hasattr(self, 'date_ranges') or not self.date_ranges:
-            messagebox.showerror("Hiba", "Először töltsd le a fordulókat!")
-            return
-        base_dir = pathlib.Path(__file__).parent.resolve()
-        eredmenyek_dir = base_dir / "eredmenyek"
-        eredmenyek_dir.mkdir(exist_ok=True)
         fetcher = ForumDateAnalyzer(
             self.username,
             self.password,
             "https://www83.hattrick.org/Forum/Read.aspx?t=17632450&",
         )
         self.date_ranges = fetcher.get_date_ranges()
+        if not hasattr(self, 'date_ranges') or not self.date_ranges:
+            messagebox.showerror("Hiba", "Először töltsd le a fordulókat!")
+            return
+        base_dir = pathlib.Path(__file__).parent.resolve()
+        eredmenyek_dir = base_dir / "eredmenyek"
+        eredmenyek_dir.mkdir(exist_ok=True)
         fetcher = ForumFetcher(
             self.username,
             self.password,
@@ -196,8 +197,7 @@ class HattrickLoginApp:
         """Display the email sending interface."""
         for widget in self.root.winfo_children():
             widget.destroy()
-        current_height = self.root.winfo_height()
-        self.root.geometry(f"400x{current_height}")
+        self.root.title("Sending e-mail")
         self.recipient_label = tk.Label(self.root, text="Recipient e-mail:")
         self.recipient_label.pack()
         self.recipient = tk.Entry(self.root, width=30)
