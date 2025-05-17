@@ -78,7 +78,7 @@ class HattrickLoginApp:
 
         tk.Button(
             self.root,
-            text="Sendin e-mail",
+            text="Sending e-mail",
             width=20,
             height=2,
             command=self.email_menu,
@@ -123,7 +123,7 @@ class HattrickLoginApp:
 
         tk.Button(
             self.root,
-            text="Sendin e-mail",
+            text="Sending e-mail",
             width=20,
             height=2,
             command=self.email_menu,
@@ -222,8 +222,8 @@ class HattrickLoginApp:
         ).pack(pady=10)
         tk.Button(
             self.root,
-            text="Főmenü",
-            command=self.show_main_menu
+            text="Login screen",
+            command=self._setup_login_ui
         ).pack(pady=10)
 
     def send_gmail_with_attachments(self):
