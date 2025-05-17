@@ -22,9 +22,6 @@ class ForumFetcher:
 
     def fetch_forum_data(self):
         """Letölti és feldolgozza a fórum hozzászólásokat."""
-        self.login.login_forum()
-        self.session = self.login.convert_cookies_to_requests()
-
         forum_data = []
         current_url = f"{self.forum_url}n={self.kezdo}&t=17632450&v=4"
         reached_last = False
@@ -52,7 +49,6 @@ class ForumFetcher:
                                    f"{next_link['href']}")
                 else:
                     break
-        self.login.driver.quit()
         return forum_data
 
     def parse_post(self, wrapper):
