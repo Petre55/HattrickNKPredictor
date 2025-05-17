@@ -103,14 +103,8 @@ class HattrickLoginApp:
                 "?ReturnUrl=%2fMyHattrick%2fDashboard.aspx"
             )
             self.hattrick_scraper.login()
-            self.session = self.hattrick_scraper.convert_cookies_to_requests()
             self.hattrick_scraper.driver.quit()
-            fetcher = ForumDateAnalyzer(
-                self.username,
-                self.password,
-                "https://www83.hattrick.org/Forum/Read.aspx?t=17632450&",
-            )
-            self.date_ranges = fetcher.get_date_ranges()
+
             self.show_main_menu()
         except (ConnectionError, TimeoutError) as e:
             messagebox.showerror("Login Failed", f"Network error: {str(e)}")
@@ -147,17 +141,25 @@ class HattrickLoginApp:
         base_dir = pathlib.Path(__file__).parent.resolve()
         eredmenyek_dir = base_dir / "eredmenyek"
         eredmenyek_dir.mkdir(exist_ok=True)
-
+        fetcher = ForumDateAnalyzer(
+            self.username,
+            self.password,
+            "https://www83.hattrick.org/Forum/Read.aspx?t=17632450&",
+        )
+        self.date_ranges = fetcher.get_date_ranges()
+        fetcher = ForumFetcher(
+            self.username,
+            self.password,
+            "https://www.hattrick.org/hu/Forum/Read.aspx?",
+            0,
+            0
+        )
+        fetcher.login.login_forum()
+        fetcher.session=fetcher.login.convert_cookies_to_requests()
         for index, (first_post, last_post) in enumerate(self.date_ranges):
             try:
-                # Adatok letöltése
-                fetcher = ForumFetcher(
-                    self.username,
-                    self.password,
-                    "https://www.hattrick.org/hu/Forum/Read.aspx?",
-                    first_post,
-                    last_post
-                )
+                fetcher.kezdo=first_post
+                fetcher.utolso=last_post
                 data = fetcher.fetch_forum_data()
 
                 csv_filename = f"fordulo_{index + 1}.csv"
@@ -182,7 +184,7 @@ class HattrickLoginApp:
             except TimeoutException as e:
                 print(f"Hiba a {index + 1}. forduló feldolgozásakor: {str(e)}")
                 continue
-
+        fetcher.login.driver.quit()
         aggregator = NKScoreAggregator()
         aggregator.add_folder(f"{eredmenyek_dir}")
         aggregator.save_result()
